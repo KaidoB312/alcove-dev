@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= project ? 'Edit' : 'Add' %> Project · Alcove Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #e0dbcf;
+        }
+        label {
+            display: block;
+            margin: 1rem 0 0.3rem;
+            font-weight: 500;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #e0dbcf;
+            border-radius: 0.5rem;
+            font-family: inherit;
+        }
+        .contributor-item {
+            background: #f9f5ef;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .contributor-item select, .contributor-item input {
+            flex: 2;
+            margin: 0;
+        }
+        .contributor-item button {
+            flex: 0 0 auto;
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.3rem;
+            cursor: pointer;
+        }
+        .add-btn {
+            margin-top: 0.5rem;
+            padding: 0.3rem 0.8rem;
+            background: #2c5f2d;
+            color: white;
+            border: none;
+            border-radius: 0.3rem;
+            cursor: pointer;
+        }
+        .note {
+            font-size: 0.8rem;
+            color: #5f5d59;
+            margin-top: 0.3rem;
+        }
+        hr {
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1><%= project ? 'Edit' : 'Add New' %> Project</h1>
+            <% if (locals.error) { %>
+                <p style="color:#c2a25b;"><%= error %></p>
+            <% } %>
+            <form method="POST" action="/admin/projects/save" id="projectForm">
+                <% if (project && project.id) { %>
+                    <input type="hidden" name="id" value="<%= project.id %>">
+                <% } %>
+
+                <label>Title *</label>
+                <input type="text" name="title" value="<%= project ? project.title : '' %>" required>
+
+                <label>Description</label>
+                <textarea name="description"><%= project ? project.description : '' %></textarea>
+
+                <label>Tags (comma-separated, e.g., "Web, Design")</label>
+                <input type="text" id="tagsInput" value="<%= project && project.tags ? (Array.isArray(project.tags) ? project.tags.join(', ') : (typeof project.tags === 'string' ? (() => { try { return JSON.parse(project.tags).join(', '); } catch(e) { return project.tags; } })() : '')) : '' %>">
+                <div class="note">Tags will be stored as JSON.</div>
+
+                <label>Duration (e.g., "2023–2024" or "Ongoing")</label>
+                <input type="text" id="durationInput" value="<%= project && project.duration ? (typeof project.duration === 'object' ? (project.duration.project || '') : (typeof project.duration === 'string' ? (() => { try { const obj = JSON.parse(project.duration); return obj.project || ''; } catch(e) { return ''; } })() : '')) : '' %>">
+                <div class="note">Will be stored as JSON with key "project".</div>
+
+                <label>Contributors</label>
+                <div id="contributorsContainer">
+                    <% if (typeof contributors !== 'undefined' && contributors && contributors.length) { %>
+                        <% contributors.forEach(contrib => { %>
+                            <div class="contributor-item">
+                                <select name="member_id" class="contributor-select">
+                                    <% members.forEach(member => { %>
+                                        <option value="<%= member.id %>" <%= member.id == contrib.member_id ? 'selected' : '' %>><%= member.name %></option>
+                                    <% }) %>
+                                </select>
+                                <input type="text" placeholder="Role tag (e.g., 'Developer')" class="contributor-tag" value="<%= contrib.role_tag %>">
+                                <button type="button" class="remove-contributor">✕</button>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="contributor-item">
+                            <select name="member_id" class="contributor-select">
+                                <% members.forEach(member => { %>
+                                    <option value="<%= member.id %>"><%= member.name %></option>
+                                <% }) %>
+                            </select>
+                            <input type="text" placeholder="Role tag (e.g., 'Developer')" class="contributor-tag">
+                            <button type="button" class="remove-contributor">✕</button>
+                        </div>
+                    <% } %>
+                </div>
+                <button type="button" class="add-btn" id="addContributor">+ Add Contributor</button>
+                <div class="note">Each contributor must have a role tag (e.g., "Developer", "Designer").</div>
+
+                <hr>
+
+                <button type="submit" class="btn primary">Save Project</button>
+                <a href="/admin/dashboard" class="btn secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Pre-populate members list for dynamic addition
+        const members = <%- JSON.stringify(members) %>;
+
+        function createContributorItem(memberId = null, roleTag = '') {
+            const div = document.createElement('div');
+            div.className = 'contributor-item';
+            const select = document.createElement('select');
+            select.className = 'contributor-select';
+            members.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = member.name;
+                if (memberId && member.id == memberId) option.selected = true;
+                select.appendChild(option);
+            });
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Role tag (e.g., "Developer")';
+            input.className = 'contributor-tag';
+            input.value = roleTag;
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-contributor';
+            removeBtn.textContent = '✕';
+            removeBtn.onclick = () => div.remove();
+            div.appendChild(select);
+            div.appendChild(input);
+            div.appendChild(removeBtn);
+            return div;
+        }
+
+        document.getElementById('addContributor').addEventListener('click', () => {
+            const container = document.getElementById('contributorsContainer');
+            container.appendChild(createContributorItem());
+        });
+
+        // On form submit, build JSON for tags, duration, and contributors
+        document.getElementById('projectForm').addEventListener('submit', (e) => {
+            // Tags: convert comma-separated string to JSON array
+            const tagsInput = document.getElementById('tagsInput').value;
+            const tagsArray = tagsInput.split(',').map(t => t.trim()).filter(t => t);
+            const tagsJson = JSON.stringify(tagsArray);
+            const tagsHidden = document.createElement('input');
+            tagsHidden.type = 'hidden';
+            tagsHidden.name = 'tags';
+            tagsHidden.value = tagsJson;
+            document.getElementById('projectForm').appendChild(tagsHidden);
+
+            // Duration: wrap simple text into {"project": value}
+            const durationInput = document.getElementById('durationInput').value.trim();
+            const durationJson = JSON.stringify({ project: durationInput });
+            const durationHidden = document.createElement('input');
+            durationHidden.type = 'hidden';
+            durationHidden.name = 'duration';
+            durationHidden.value = durationJson;
+            document.getElementById('projectForm').appendChild(durationHidden);
+
+            // Contributors: gather all contributor items
+            const contributors = [];
+            document.querySelectorAll('.contributor-item').forEach(item => {
+                const memberId = item.querySelector('.contributor-select').value;
+                const roleTag = item.querySelector('.contributor-tag').value.trim();
+                if (memberId && roleTag) {
+                    contributors.push({ member_id: parseInt(memberId), role_tag: roleTag });
+                }
+            });
+            const contributorsJson = JSON.stringify(contributors);
+            const contributorsHidden = document.createElement('input');
+            contributorsHidden.type = 'hidden';
+            contributorsHidden.name = 'contributors';
+            contributorsHidden.value = contributorsJson;
+            document.getElementById('projectForm').appendChild(contributorsHidden);
+        });
+    </script>
+</body>
+</html>

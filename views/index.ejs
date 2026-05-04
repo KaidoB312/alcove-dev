@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alcove | quiet, intentional development</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">
+                <span class="mono">[</span> The Alcove <span class="mono">]</span>
+            </div>
+            <button class="menu-toggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links">
+                <a href="/" class="active">home</a>
+                <a href="/portfolio">portfolio</a>
+                <a href="/projects">projects</a>
+                <a href="/#contact">contact</a>
+            </div>
+            <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-content">
+                <span class="badge">// intentional development</span>
+                <h1>quiet, reliable<br>infrastructure.</h1>
+                <p>Systems administration, automation, and full‑stack development – delivered with clarity and care.</p>
+                <div class="hero-actions">
+                    <a href="#contact" class="btn primary">start a conversation →</a>
+                    <a href="#services" class="btn secondary">explore services</a>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">6+</span>
+                    <span class="stat-label">years collective experience</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">support & monitoring</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="services">
+            <h2>what we do</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-terminal service-icon"></i>
+                    <h3>Systems Administration</h3>
+                    <p>Linux, Windows, Networking, Security, Automation, Monitoring, Troubleshooting</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-cubes service-icon"></i>
+                    <h3>Pterodactyl Framework</h3>
+                    <p>Wings, Node Balancing, Custom Addons, Custom Wings, Troubleshooting</p>
+                </div>
+                <div class="service-card">
+                    <i class="fab fa-node service-icon"></i>
+                    <h3>NodeJS</h3>
+                    <p>Discord.js, Express, Socket.io, routing-controllers, TypeScript</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-users service-icon"></i>
+                    <h3>Human Resources</h3>
+                    <p>Hiring, Training, Team Management, Conflict Resolution, Performance Management</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-headset service-icon"></i>
+                    <h3>Customer Service</h3>
+                    <p>Communication, Problem Solving, Empathy, Active Listening, Conflict Resolution</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="projects">
+            <h2>recent projects</h2>
+            <div class="projects-slider-container">
+                <button class="slider-btn prev" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                <div class="projects-slider" id="projectsSlider"></div>
+                <button class="slider-btn next" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="contact-card">
+                <h2>join our community</h2>
+                <p>Connect with us on Discord for support, updates, and collaboration.</p>
+                <div class="discord-widget">
+                    <iframe src="https://discord.com/widget?id=1346553722611695637&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 The Alcove – quiet, intentional development.</p>
+        </footer>
+    </div>
+
+    <a href="/admin/login" class="admin-badge"><i class="fas fa-lock"></i> admin</a>
+
+    <script>
+        window.projects = <%- JSON.stringify(projects) %>;
+    </script>
+    <script src="/script.js"></script>
+    <script src="/dark.js"></script>
+</body>
+</html>

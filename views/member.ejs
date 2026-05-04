@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= member.name %> · Alcove</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .skill-item { margin-bottom: 1rem; }
+        .skill-name { font-weight: 600; display: block; }
+        .skill-bar { background: #e0dbcf; border-radius: 2rem; height: 0.5rem; width: 100%; overflow: hidden; }
+        .skill-progress { background: #c2a25b; height: 100%; border-radius: 2rem; width: 0%; }
+        .contact-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+        .contact-links a { color: #2b2a28; text-decoration: none; border: 1px solid #e0dbcf; padding: 0.5rem 1rem; border-radius: 2rem; transition: all 0.2s; }
+        .contact-links a:hover { background: #c2a25b10; border-color: #c2a25b; }
+        .grid-2col { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+        hr { margin: 2rem 0; border: 0; height: 1px; background: #e0dbcf; }
+        .skill-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem; }
+        .tag { background: #e8e2d4; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.7rem; color: #5f5d59; }
+        .experience-title { font-weight: 600; font-family: 'Space Mono', monospace; }
+        .experience-meta { font-size: 0.8rem; color: #5f5d59; }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+        .project-card {
+            background: white;
+            border: 1px solid #e0dbcf;
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+        .project-tag {
+            display: inline-block;
+            background: #e8e2d4;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo"><span class="mono">[</span> The Alcove <span class="mono">]</span></div>
+            <button class="menu-toggle" aria-label="Toggle navigation">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links">
+                <a href="/">home</a>
+                <a href="/portfolio">portfolio</a>
+                <a href="/projects">projects</a>
+                <a href="/#contact">contact</a>
+            </div>
+            <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-content">
+                <span class="badge">// <%= member.role %></span>
+                <h1><%= member.name %><br><%= member.tagline || '' %></h1>
+                <p><%= member.bio %></p>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number"><%= member.experience_years || '5+' %></span>
+                    <span class="stat-label">years experience</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number"><%= member.badge || 'Skills' %></span>
+                    <span class="stat-label"><%= member.badge_label || 'expertise' %></span>
+                </div>
+            </div>
+        </section>
+
+        <div class="resume-section">
+            <h2>about me</h2>
+            <p><%= member.bio_full || member.bio %></p>
+        </div>
+        <hr>
+
+        <div class="resume-section">
+            <h2>core competencies</h2>
+            <div class="grid-2col">
+                <% if (member.skills && member.skills.length) { %>
+                    <% member.skills.forEach(skill => { %>
+                        <div class="skill-item">
+                            <span class="skill-name"><%= skill.name %></span>
+                            <div class="skill-bar"><div class="skill-progress" style="width: <%= skill.percent %>%;"></div></div>
+                            <% if (skill.tags && skill.tags.length) { %>
+                                <div class="skill-tags">
+                                    <% skill.tags.forEach(tag => { %>
+                                        <span class="tag"><%= tag %></span>
+                                    <% }) %>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+
+        <% if (member.certifications && member.certifications.length) { %>
+            <div class="resume-section">
+                <h2>certifications</h2>
+                <div class="skill-tags">
+                    <% member.certifications.forEach(cert => { %>
+                        <span class="tag"><%= cert %></span>
+                    <% }) %>
+                </div>
+            </div>
+            <hr>
+        <% } %>
+
+        <div class="resume-section">
+            <h2>what I offer</h2>
+            <div class="services-grid">
+                <% if (member.offerings && member.offerings.length) { %>
+                    <% member.offerings.forEach(offering => { %>
+                        <div class="service-card">
+                            <i class="fas fa-<%= offering.icon %> service-icon"></i>
+                            <h3><%= offering.title %></h3>
+                            <p><%= offering.desc %></p>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+        </div>
+        <hr>
+
+        <div class="resume-section">
+            <h2>portfolio</h2>
+            <div class="projects-grid">
+                <% if (projects && projects.length) { %>
+                    <% projects.forEach(proj => { %>
+                        <div class="project-card">
+                            <h3><%= proj.name %></h3>
+                            <div class="project-tag">
+                                <% 
+                                    if (proj.contributorDetails && proj.contributorDetails.length) {
+                                        const contributor = proj.contributorDetails.find(c => c.member_slug === member.slug);
+                                        if (contributor) { 
+                                %>
+                                    <%= contributor.tag %>
+                                <% 
+                                        } 
+                                    } 
+                                %>
+                            </div>
+                            <p><%= proj.description %></p>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p>No projects yet.</p>
+                <% } %>
+            </div>
+        </div>
+        <hr>
+
+        <div class="contact-card" style="margin-top: 0;">
+            <h2>get in touch</h2>
+            <p>Feel free to reach out for collaborations or opportunities.</p>
+            <div class="contact-links">
+                <% if (member.email) { %>
+                    <a href="/cdn-cgi/l/email-protection#c1fde4fce1aca4aca3a4b3efa4aca0a8ade1e4ff"><i class="fas fa-envelope"></i> <%= member.email %></a>
+                <% } %>
+                <% if (member.discord) { %>
+                    <a href="<%= member.discord %>" target="_blank"><i class="fab fa-discord"></i> Discord</a>
+                <% } %>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 The Alcove – quiet, intentional development.</p>
+        </footer>
+    </div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script src="/script.js"></script>
+<script src="/dark.js"></script>
+</body>
+</html>
