@@ -5,13 +5,6 @@ function json(data, status = 200) {
   });
 }
 
-function html(body, status = 200) {
-  return new Response(body, {
-    status,
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
-  });
-}
-
 async function verifyPassword(password, storedHash) {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
@@ -76,169 +69,6 @@ function parseForm(body) {
   return obj;
 }
 
-const ADMIN_HTML = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin · Alcove</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="stylesheet" href="/style.css">
-<style>
-.admin-container{max-width:1200px;margin:0 auto;padding:2rem}
-.login-card{max-width:400px;margin:4rem auto;text-align:center}
-.login-card input{width:100%;padding:.8rem;margin:1rem 0;border:1px solid #e0dbcf;border-radius:.8rem;background:#fefcf9;font-family:inherit}
-.error{color:#c2a25b;margin-bottom:1rem}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin:2rem 0}
-.stat-card{background:white;border:1px solid #e0dbcf;border-radius:1rem;padding:1.5rem;text-align:center}
-.stat-number{font-size:3rem;font-weight:700;font-family:'Space Mono',monospace;color:#c2a25b}
-.admin-table{width:100%;border-collapse:collapse;background:white;border-radius:1rem;overflow:hidden;margin:1rem 0}
-.admin-table th,.admin-table td{padding:1rem;text-align:left;border-bottom:1px solid #e0dbcf}
-.admin-table th{background:#f0ede6;font-weight:600}
-.form-container{max-width:800px;margin:2rem auto;background:white;border-radius:1rem;padding:2rem;border:1px solid #e0dbcf}
-.form-container label{display:block;margin:1rem 0 .3rem;font-weight:500}
-.form-container input,.form-container textarea,.form-container select{width:100%;padding:.6rem;border:1px solid #e0dbcf;border-radius:.5rem;font-family:inherit}
-.action-buttons{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:2rem 0}
-.action-buttons a{min-width:180px}
-.btn-sm{padding:.3rem .8rem;font-size:.8rem}
-.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
-.admin-nav{margin:0 0 2rem;text-align:right}
-.dynamic-group{margin:1rem 0;padding:.5rem;border:1px solid #e0dbcf;border-radius:.5rem}
-.dynamic-item{display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.5rem}
-.dynamic-item input,.dynamic-item textarea,.dynamic-item select{flex:1;margin:0}
-.dynamic-item button{margin-top:0;padding:.3rem .6rem;background:#e67e22;color:white;border:none;border-radius:.3rem;cursor:pointer}
-.add-btn{margin-top:.5rem;padding:.3rem .8rem;background:#2c5f2d;color:white;border:none;border-radius:.3rem;cursor:pointer}
-.note{font-size:.8rem;color:#5f5d59;margin-top:.3rem}
-.recent-section{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
-.recent-card{background:white;border:1px solid #e0dbcf;border-radius:1rem;padding:1rem}
-.recent-list{list-style:none;padding:0}
-.recent-list li{border-bottom:1px solid #e0dbcf;padding:.5rem 0;display:flex;justify-content:space-between;align-items:center}
-.recent-list a{text-decoration:none;color:#2b2a28}
-.recent-date{font-size:.7rem;color:#5f5d59}
-.actions a{margin-right:.5rem}
-.contributor-item{background:#f9f5ef;padding:.8rem;margin-bottom:.5rem;border-radius:.5rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
-.contributor-item select,.contributor-item input{flex:2;margin:0}
-.contributor-item button{flex:0 0 auto}
-.hidden{display:none}
-</style>
-</head>
-<body>
-<div class="container">
-<div id="admin-app">
-<div id="admin-login" class="login-card contact-card">
-<h2>Admin Login</h2>
-<p id="login-error" class="error hidden"></p>
-<input type="password" id="admin-password" placeholder="Enter password">
-<button class="btn primary" onclick="adminLogin()">Login</button>
-</div>
-<div id="admin-panel" class="hidden admin-container">
-<div class="admin-nav">
-<a href="#" onclick="adminLogout()" class="btn secondary btn-sm">Logout</a>
-<a href="/" class="btn secondary btn-sm">View Site</a>
-</div>
-<div id="admin-content"></div>
-</div>
-</div>
-</div>
-<script src="/admin.js"></script>
-</body>
-</html>`;
-
-const PAGE_HTML = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Alcove | quiet, intentional development</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="stylesheet" href="/style.css">
-</head>
-<body>
-<div class="container">
-<nav class="navbar">
-<div class="logo"><span class="mono">[</span> The Alcove <span class="mono">]</span></div>
-<button class="menu-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
-<div class="nav-links">
-<a href="/" class="nav-home">home</a>
-<a href="/portfolio" class="nav-portfolio">portfolio</a>
-<a href="/projects" class="nav-projects">projects</a>
-<a href="/#contact">contact</a>
-</div>
-<button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
-</nav>
-<main id="page-content"></main>
-<footer><p>© 2026 The Alcove – quiet, intentional development.</p></footer>
-</div>
-<a href="/admin" class="admin-badge"><i class="fas fa-lock"></i> admin</a>
-<script src="/dark.js"></script>
-<script src="/app.js"></script>
-</body>
-</html>`;
-
-const MEMBER_HTML = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MEMBER_NAME · Alcove</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="stylesheet" href="/style.css">
-<style>
-.skill-item{margin-bottom:1rem}.skill-name{font-weight:600;display:block}.skill-bar{background:#e0dbcf;border-radius:2rem;height:.5rem;width:100%;overflow:hidden}.skill-progress{background:#c2a25b;height:100%;border-radius:2rem;width:0%}.contact-links{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}.contact-links a{color:#2b2a28;text-decoration:none;border:1px solid #e0dbcf;padding:.5rem 1rem;border-radius:2rem;transition:all .2s}.contact-links a:hover{background:#c2a25b10;border-color:#c2a25b}.grid-2col{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem}hr{margin:2rem 0;border:0;height:1px;background:#e0dbcf}.skill-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.5rem}.tag{background:#e8e2d4;padding:.2rem .6rem;border-radius:1rem;font-size:.7rem;color:#5f5d59}.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin:1rem 0}.project-card{background:white;border:1px solid #e0dbcf;border-radius:1rem;padding:1rem}.project-tag{display:inline-block;background:#e8e2d4;font-size:.7rem;padding:.2rem .6rem;border-radius:1rem;margin:.5rem 0}
-</style>
-</head>
-<body>
-<div class="container">
-<nav class="navbar">
-<div class="logo"><span class="mono">[</span> The Alcove <span class="mono">]</span></div>
-<button class="menu-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
-<div class="nav-links">
-<a href="/">home</a>
-<a href="/portfolio">portfolio</a>
-<a href="/projects">projects</a>
-<a href="/#contact">contact</a>
-</div>
-<button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
-</nav>
-<div id="member-content"></div>
-<footer><p>© 2026 The Alcove – quiet, intentional development.</p></footer>
-</div>
-<script>window.MEMBER_SLUG = "MEMBER_SLUG_PLACEHOLDER";</script>
-<script src="/dark.js"></script>
-<script src="/app.js"></script>
-</body>
-</html>`;
-
-const NOT_FOUND_HTML = `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Page Not Found · Alcove</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link rel="stylesheet" href="/style.css">
-</head>
-<body>
-<div class="container">
-<nav class="navbar">
-<div class="logo"><span class="mono">[</span> The Alcove <span class="mono">]</span></div>
-<button class="menu-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
-<div class="nav-links">
-<a href="/">home</a><a href="/portfolio">portfolio</a><a href="/projects">projects</a><a href="/#contact">contact</a>
-</div>
-<button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode"><i class="fas fa-moon"></i></button>
-</nav>
-<section class="hero" style="text-align:center;margin:4rem 0;">
-<h1>404</h1><p>Page not found.</p><a href="/" class="btn primary">Go home →</a>
-</section>
-<footer><p>© 2026 The Alcove – quiet, intentional development.</p></footer>
-</div>
-<script src="/dark.js"></script>
-</body>
-</html>`;
-
 async function getMemberDetails(db, memberId) {
   const member = await db.prepare('SELECT * FROM members WHERE id = ?').bind(memberId).first();
   if (!member) return null;
@@ -292,9 +122,26 @@ function transformProject(project) {
   };
 }
 
-async function handleApi(path, method, request, env, db) {
+export async function onRequest(context) {
+  const { request, env } = context;
+  const url = new URL(request.url);
+  const path = url.pathname;
+  const method = request.method;
+  const db = env.DB;
+
+  if (!path.startsWith('/api/')) {
+    return json({ error: 'Not found' }, 404);
+  }
+
   const apiPath = path.replace('/api/', '');
 
+  async function requireAuth() {
+    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+    if (!token) return null;
+    return verifyToken(token, env.SESSION_SECRET);
+  }
+
+  // --- Auth ---
   if (apiPath === 'auth/login' && method === 'POST') {
     const body = await request.text();
     const { password } = parseForm(body);
@@ -312,12 +159,7 @@ async function handleApi(path, method, request, env, db) {
     return json({ valid: !!payload });
   }
 
-  async function requireAuth() {
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-    if (!token) return null;
-    return verifyToken(token, env.SESSION_SECRET);
-  }
-
+  // --- Public API ---
   if (apiPath === 'members' && method === 'GET') {
     const { results } = await db.prepare('SELECT id, slug, name, role, bio, email, discord, experience_years, profile_pic, github, twitter, created_at FROM members ORDER BY id').all();
     return json(results);
@@ -341,6 +183,7 @@ async function handleApi(path, method, request, env, db) {
     return json({ member, projects: memberProjects });
   }
 
+  // --- Admin API ---
   if (apiPath === 'admin/dashboard' && method === 'GET') {
     const auth = await requireAuth();
     if (!auth) return json({ error: 'Unauthorized' }, 401);
@@ -473,42 +316,4 @@ async function handleApi(path, method, request, env, db) {
   }
 
   return json({ error: 'Not found' }, 404);
-}
-
-export async function onRequest(context) {
-  const { request, env } = context;
-  const url = new URL(request.url);
-  const path = url.pathname;
-  const method = request.method;
-  const db = env.DB;
-
-  if (/\.(css|js|ico|png|jpg|jpeg|svg|woff2?|ttf|eot|map)$/i.test(path)) {
-    return new Response(null, { status: 404 });
-  }
-
-  if (path === '/' || path === '/portfolio' || path === '/projects') {
-    return html(PAGE_HTML);
-  }
-
-  if (path === '/admin') {
-    return html(ADMIN_HTML);
-  }
-
-  if (path.startsWith('/api/')) {
-    return handleApi(path, method, request, env, db);
-  }
-
-  const slugMatch = path.match(/^\/([^\/]+)$/);
-  if (slugMatch) {
-    const slug = decodeURIComponent(slugMatch[1]);
-    try {
-      const memberRow = await db.prepare('SELECT name FROM members WHERE slug = ?').bind(slug).first();
-      if (memberRow) {
-        return html(MEMBER_HTML.replace(/MEMBER_NAME/g, memberRow.name).replace(/MEMBER_SLUG_PLACEHOLDER/g, slug));
-      }
-    } catch {}
-    return html(NOT_FOUND_HTML, 404);
-  }
-
-  return html(NOT_FOUND_HTML, 404);
 }
