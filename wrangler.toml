@@ -1,14 +1,2 @@
 name = "alcove-dev"
-compatibility_date = "2025-01-01"
 pages_build_output_dir = "public"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "alcove-db"
-database_id = ""
-
-[env.production]
-[[env.production.d1_databases]]
-binding = "DB"
-database_name = "alcove-db"
-database_id = "aa349f18-964c-4753-969e-7568f9e99b0d"
