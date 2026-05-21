@@ -10,9 +10,9 @@
     "pages:dev": "vite",
     "pages:deploy": "wrangler pages deploy dist",
     "db:migrate": "wrangler d1 execute alcove-db --file=./migrations/0001_initial.sql",
-    "db:migrate:prod": "wrangler d1 execute alcove-db --file=./migrations/0001_initial.sql --env=production",
+    "db:migrate:prod": "wrangler d1 execute alcove-db --remote --file=./migrations/0001_initial.sql",
     "db:seed": "wrangler d1 execute alcove-db --file=./scripts/seed.sql",
-    "db:seed:prod": "wrangler d1 execute alcove-db --file=./scripts/seed.sql --env=production"
+    "db:seed:prod": "wrangler d1 execute alcove-db --remote --file=./scripts/seed.sql"
   },
   "dependencies": {
     "react": "^18.2.0",
