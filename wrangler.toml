@@ -1,2 +1,7 @@
 name = "alcove-dev"
 pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "alcove-db"
+database_id = "aa349f18-964c-4753-969e-7568f9e99b0d"
