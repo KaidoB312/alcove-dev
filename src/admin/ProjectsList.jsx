@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { api } from '../api';
 
 export default function ProjectsList({ navigate }) {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState(null);
 
-  useEffect(() => { api('/admin/projects').then(setProjects); }, []);
+  const load = () => api('/admin/projects').then(setProjects);
+
+  useEffect(() => { load(); }, []);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this project?')) return;
     await api(`/admin/projects/${id}`, { method: 'DELETE' });
-    setProjects(projects.filter(p => p.id !== id));
+    load();
   };
+
+  if (!projects) return <p>Loading...</p>;
+  if (projects.error) return <p style={{ color: 'var(--accent)' }}>{projects.error} <button className="btn secondary btn-sm" onClick={() => { setProjects(null); load(); }}>Retry</button></p>;
 
   return (
     <>

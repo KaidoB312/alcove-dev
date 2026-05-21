@@ -7,6 +7,7 @@ export default function Dashboard({ navigate }) {
   useEffect(() => { api('/admin/dashboard').then(setData); }, []);
 
   if (!data) return <p>Loading...</p>;
+  if (data.error) return <p style={{ color: 'var(--accent)' }}>{data.error} <button className="btn secondary btn-sm" onClick={() => { setData(null); api('/admin/dashboard').then(setData); }}>Retry</button></p>;
 
   return (
     <>

@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { api } from '../api';
 
 export default function MembersList({ navigate }) {
-  const [members, setMembers] = useState([]);
+  const [members, setMembers] = useState(null);
 
-  useEffect(() => { api('/admin/members').then(setMembers); }, []);
+  const load = () => api('/admin/members').then(setMembers);
+
+  useEffect(() => { load(); }, []);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this member?')) return;
     await api(`/admin/members/${id}`, { method: 'DELETE' });
-    setMembers(members.filter(m => m.id !== id));
+    load();
   };
+
+  if (!members) return <p>Loading...</p>;
+  if (members.error) return <p style={{ color: 'var(--accent)' }}>{members.error} <button className="btn secondary btn-sm" onClick={() => { setMembers(null); load(); }}>Retry</button></p>;
 
   return (
     <>
