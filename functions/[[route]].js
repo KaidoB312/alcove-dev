@@ -122,6 +122,56 @@ function transformProject(project) {
   };
 }
 
+async function seedData(db) {
+  const J = JSON.stringify;
+
+  await db.prepare(`INSERT OR IGNORE INTO members (id, slug, name, role, bio, email, discord, experience_years) VALUES (1,'kaido','Kaido / Jay','Web Developer & General Manager','I''m a Web Developer and General Manager from the US. With almost 5 years of experience, I specialize in Web Design, Project Management, and Human Resources. My goal is to ensure all projects run as well as possible for my business and yours.','kaidob312@gmail.com','https://discord.gg/mSASEN8gmk',5)`).run();
+  await db.prepare(`INSERT OR IGNORE INTO members (id, slug, name, role, bio, email, discord, experience_years) VALUES (2,'cams','Cam M','Systems Administrator & General Manager','I''m a Systems Administrator and General Manager from the US, passionate about my work. With over 5 years of experience in IT, I specialize in network administration, server management, and technical support. My goal is to ensure all systems run smoothly so your business can focus on what it does best.','cam@camyzed.dev','https://discord.com/users/cammyze',5)`).run();
+
+  const kaidoSkills = [{name:'Systems Administration',percent:50,tags:['Linux','Windows','Networking']},{name:'Adobe Creative Suite',percent:90,tags:['Photoshop','Illustrator','Premiere Pro']},{name:'Web Development',percent:85,tags:['HTML/CSS','JavaScript','Responsive']},{name:'Node.js',percent:65,tags:['Discord.js','Express']}];
+  const kaidoCerts = ['Adobe Certified Content Creation and Marketing Using Adobe Express','Adobe Certified Graphic Design and Illustration using Adobe Illustrator','Adobe Certified Professional in Marketing Design','Adobe Certified Professional in Web Design','Adobe Certified Visual Design using Adobe Photoshop','Adobe Certified Web Authoring using Adobe Dreamweaver'];
+  const kaidoOfferings = [{title:'Creative Design',desc:'Logos, branding, video production, and presentations that tell your story.',icon:'palette'},{title:'Web Development',desc:'Responsive, accessible websites built with modern HTML/CSS and JavaScript.',icon:'code'},{title:'Project Management',desc:'Keep projects on track, teams aligned, and goals achieved.',icon:'chalkboard-user'}];
+  const camSkills = [{name:'Systems Administration',percent:79,tags:['Linux','Windows','Networking','Security','Automation']},{name:'Pterodactyl Framework',percent:90,tags:['Wings','Node Balancing','Custom Addons']},{name:'NodeJS',percent:82,tags:['Discord.js','Express','Socket.io']},{name:'Human Resources',percent:64,tags:['Hiring','Training','Team Management']},{name:'Customer Service',percent:60,tags:['Communication','Problem Solving','Empathy']}];
+  const camOfferings = [{title:'IT Management',desc:'Systems administration, monitoring, and automation for reliable infrastructure.',icon:'server'},{title:'Minecraft Hosting',desc:'Pterodactyl setup, custom Wings, node balancing, and plugin development.',icon:'cubes'},{title:'Team Leadership',desc:'Hiring, training, conflict resolution, and performance management.',icon:'users'}];
+
+  for (const s of kaidoSkills) await db.prepare(`INSERT OR IGNORE INTO member_skills (member_id, skill_name, percent, tags) VALUES (1,?,?,?)`).bind(s.name, s.percent, J(s.tags)).run();
+  for (const c of kaidoCerts) await db.prepare(`INSERT OR IGNORE INTO member_certifications (member_id, cert_name) VALUES (1,?)`).bind(c).run();
+  for (const o of kaidoOfferings) await db.prepare(`INSERT OR IGNORE INTO member_offerings (member_id, title, description, icon) VALUES (1,?,?,?)`).bind(o.title, o.desc, o.icon).run();
+  for (const s of camSkills) await db.prepare(`INSERT OR IGNORE INTO member_skills (member_id, skill_name, percent, tags) VALUES (2,?,?,?)`).bind(s.name, s.percent, J(s.tags)).run();
+  for (const o of camOfferings) await db.prepare(`INSERT OR IGNORE INTO member_offerings (member_id, title, description, icon) VALUES (2,?,?,?)`).bind(o.title, o.desc, o.icon).run();
+
+  const projects = [
+    {id:1,t:'CreateNow',d:'Hosting and development company where we collaborated on customer support, marketing, and infrastructure.',g:['Marketing','Support','Systems Admin'],dur:{kaido:'Dec 2023 – May 2024',cams:'Dec 2023 – May 2024'},con:[{s:'kaido',r:'Marketing & Support'},{s:'cams',r:'Systems Admin'}]},
+    {id:2,t:'CloudyNodes',d:'Node hosting platform – combined efforts in system reliability and user assistance.',g:['Customer Support','Systems Admin'],dur:{kaido:'Nov 2024 – Jan 2025',cams:'Sep 2024 – Jan 2025'},con:[{s:'kaido',r:'Customer Support'},{s:'cams',r:'Systems Admin'}]},
+    {id:3,t:'MineStudio',d:'Minecraft hosting and services – managing teams, marketing campaigns, and technical development.',g:['Marketing','Management','Development'],dur:{kaido:'Jan 2025 – Mar 2025',cams:'Dec 2024 – June 2025'},con:[{s:'kaido',r:'Marketing'},{s:'cams',r:'General Manager & Dev'}]},
+    {id:4,t:'The Void Bot',d:'A multi‑purpose Discord bot used by thousands of servers – built and maintained together.',g:['Discord.js','Node.js'],dur:{kaido:'Finished',cams:'Finished'},con:[{s:'kaido',r:'Discord.js Developer'},{s:'cams',r:'Developer'}]},
+    {id:5,t:'Discord Mail',d:'Ticket system for Discord communities, with seamless support workflows.',g:['Discord.js','Node.js','Support'],dur:{kaido:'Finished',cams:'Finished'},con:[{s:'kaido',r:'Developer'},{s:'cams',r:'Systems Integration'}]},
+    {id:6,t:'Alcove.dev',d:'This very site – crafted with a lofi aesthetic and powered by clean code.',g:['Web Design','Frontend'],dur:{kaido:'Ongoing'},con:[{s:'kaido',r:'Design & Frontend'}]},
+    {id:7,t:'Magazine Covers & Logos',d:'Designed professional magazine covers and brand logos for various clients using Photoshop and Illustrator.',g:['Graphic Design','Branding'],dur:{kaido:'Ongoing'},con:[{s:'kaido',r:'Graphic Design & Branding'}]},
+    {id:8,t:'Video Production',d:'Edited and produced promotional videos, tutorials, and short films with Premiere Pro.',g:['Video Editing','Premiere Pro'],dur:{kaido:'Ongoing'},con:[{s:'kaido',r:'Video Production'}]},
+    {id:9,t:'Website Development (Freelance)',d:'Built responsive websites using Adobe Dreamweaver and custom HTML/CSS for various clients.',g:['Web Design','HTML/CSS','Dreamweaver'],dur:{kaido:'2022–Present'},con:[{s:'kaido',r:'Web Development'}]},
+    {id:10,t:'Presentations & Content',d:'Created visually engaging presentations and slide decks for business and educational use.',g:['Presentation Design','Google Slides','PowerPoint'],dur:{kaido:'2022–Present'},con:[{s:'kaido',r:'Presentation Design'}]},
+    {id:11,t:'Datapad (Discord Bot)',d:'Utility bot with data management and automation features for Discord communities.',g:['Discord.js','Automation'],dur:{kaido:'2025'},con:[{s:'kaido',r:'Discord Bot Developer'}]},
+    {id:12,t:'Penguin Licensing',d:'License management bot for Discord communities.',g:['Discord Bot','License System'],dur:{cams:'2025'},con:[{s:'cams',r:'Discord Bot Developer'}]},
+    {id:13,t:'Atzin License System',d:'Advanced license verification and management bot.',g:['Discord Bot','License System'],dur:{cams:'2025'},con:[{s:'cams',r:'Discord Bot Developer'}]},
+    {id:14,t:'Cloud Licensing System',d:'Cloud-based license handling with automated checks.',g:['Discord Bot','License System'],dur:{cams:'2025'},con:[{s:'cams',r:'Discord Bot Developer'}]},
+    {id:15,t:'Discord Wemix Verification',d:'Custom verification system for Discord communities.',g:['Discord Bot','Verification'],dur:{cams:'2025'},con:[{s:'cams',r:'Discord Bot Developer'}]},
+    {id:16,t:'System Automation (Pterodactyl)',d:'Automated node balancing and Wings optimization for Pterodactyl panels.',g:['Pterodactyl','Automation'],dur:{cams:'2024–Present'},con:[{s:'cams',r:'Pterodactyl Automation'}]},
+    {id:17,t:'Minestom GUI API',d:'GUI framework for Minestom servers.',g:['Minestom','API Development'],dur:{cams:'2024'},con:[{s:'cams',r:'Minestom Developer'}]},
+    {id:18,t:'Minestom Tubes / CraftingStore Hook',d:'Integration with CraftingStore for Minestom servers.',g:['Minestom','Integration'],dur:{cams:'2024'},con:[{s:'cams',r:'Minestom Developer'}]},
+    {id:19,t:'Control Center',d:'Minecraft plugin with extensive administration controls.',g:['Minecraft Plugin','Administration'],dur:{cams:'2023–2024'},con:[{s:'cams',r:'Plugin Developer'}]},
+  ];
+
+  const slugToId = { kaido: 1, cams: 2 };
+  for (const p of projects) {
+    await db.prepare(`INSERT OR IGNORE INTO projects (id, title, description, tags, duration) VALUES (?,?,?,?,?)`).bind(p.id, p.t, p.d, J(p.g), J(p.dur)).run();
+    for (const c of p.con) {
+      const mid = slugToId[c.s];
+      if (mid) await db.prepare(`INSERT OR IGNORE INTO project_contributors (project_id, member_id, role_tag) VALUES (?,?,?)`).bind(p.id, mid, c.r).run();
+    }
+  }
+}
+
 export async function onRequest(context) {
   try {
   const { request, env } = context;
@@ -143,6 +193,11 @@ export async function onRequest(context) {
     db.prepare(`CREATE INDEX IF NOT EXISTS idx_project_contributors_project_id ON project_contributors(project_id)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS idx_project_contributors_member_id ON project_contributors(member_id)`),
   ]);
+
+  const count = await db.prepare('SELECT COUNT(*) as c FROM members').first();
+  if (count && count.c === 0) {
+    await seedData(db);
+  }
 
   if (!path.startsWith('/api/')) {
     return json({ error: 'Not found' }, 404);
