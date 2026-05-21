@@ -8,10 +8,15 @@ export default function Login({ onLogin }) {
   const submit = async (e) => {
     e.preventDefault();
     setError('');
-    const body = new URLSearchParams({ password });
-    const res = await api('/auth/login', { method: 'POST', body: body.toString() });
-    if (res.error) return setError(res.error);
-    onLogin(res.token);
+    try {
+      const body = new URLSearchParams({ password });
+      const res = await api('/auth/login', { method: 'POST', body: body.toString() });
+      if (res.error) return setError(res.error);
+      if (!res.token) return setError('Unexpected response from server');
+      onLogin(res.token);
+    } catch (ex) {
+      setError('Connection failed. Check that the API is reachable.');
+    }
   };
 
   return (
