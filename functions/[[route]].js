@@ -123,6 +123,7 @@ function transformProject(project) {
 }
 
 export async function onRequest(context) {
+  try {
   const { request, env } = context;
   const url = new URL(request.url);
   const path = url.pathname;
@@ -316,4 +317,7 @@ export async function onRequest(context) {
   }
 
   return json({ error: 'Not found' }, 404);
+  } catch (e) {
+    return json({ error: 'Internal server error: ' + (e.message || 'unknown') }, 500);
+  }
 }
