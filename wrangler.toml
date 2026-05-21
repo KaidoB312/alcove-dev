@@ -1,5 +1,4 @@
 name = "alcove-dev"
-pages_build_output_dir = "public"
 
 [[d1_databases]]
 binding = "DB"
