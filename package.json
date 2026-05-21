@@ -1,11 +1,17 @@
 {
   "name": "The Alcove Website",
   "version": "1.0.4",
-  "description": "Full-stack website for The Alcove, a community space in the heart of the city. Built with Node.js, Express, MySQL, and EJS.",
+  "description": "Full-stack website for The Alcove, a community space in the heart of the city. Runs on Express/MySQL locally or deploys to Cloudflare Pages with D1.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "pages:dev": "wrangler pages dev public --d1=alcove-db",
+    "pages:deploy": "wrangler pages deploy public --branch=main",
+    "db:migrate": "wrangler d1 execute alcove-db --file=./migrations/0001_initial.sql",
+    "db:migrate:prod": "wrangler d1 execute alcove-db --file=./migrations/0001_initial.sql --env=production",
+    "db:seed": "wrangler d1 execute alcove-db --file=./scripts/seed.sql",
+    "db:seed:prod": "wrangler d1 execute alcove-db --file=./scripts/seed.sql --env=production"
   },
   "dependencies": {
     "express": "^4.18.2",
